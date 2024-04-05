@@ -1,21 +1,23 @@
-# Use the official image of Golang as the base
-FROM golang:1.17
+# Use a golang base image
+FROM golang:latest
 
-# Set working directory
-WORKDIR /APP
+# Set the Current Working Directory inside the container
+WORKDIR /app
 
-# Copy application code into the image
-COPY go.mod ./
-COPY go.sum ./
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
 
-COPY *.go ./
+# Copy the source code from the current directory to the Working Directory inside the container
+COPY . .
 
-# Run the Go application
-RUN go build -o /jk-golang-webapp-books
+# Build the Go app
+RUN go build -o jk-golang-webapp-books .
 
-# Expose the port the application listens on
+# Expose port 8080 to the outside world
 EXPOSE 8080
 
-# Start the application
-CMD ["/jk-golang-webapp-books"]
+# Command to run the executable
+CMD ["./jk-golang-webapp-books"]
