@@ -5,7 +5,10 @@ FROM golang:1.17
 WORKDIR /APP
 
 #Copy application code into the image
-COPY …
+COPY go.mod ./
+RUN go mod download
+
+COPY *.go ./
 
 #Run the Go application
 RUN go build -o my-go-app
