@@ -11,10 +11,10 @@ RUN go mod download
 COPY *.go ./
 
 #Run the Go application
-RUN go build -o my-go-app
+RUN go build -o jk-golang-webapp-books
 
 #Expose the port the application listens on
 EXPOSE 8080
 
 #Start the application
-CMD [“./my-go-app”]
+CMD [“./jk-golang-webapp-books”]
