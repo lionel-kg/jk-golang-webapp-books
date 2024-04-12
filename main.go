@@ -58,7 +58,7 @@ func main() {
 	middleware.InitSessionMiddleware(e, container)
 	middleware.StaticContentsMiddleware(e, container, staticFile)
 
-	if err := e.Start(":8081"); err != nil {
+	if err := e.Start(":" + os.Getenv("PORT")); err != nil {
 		logger.GetZapLogger().Errorf(err.Error())
 	}
 
