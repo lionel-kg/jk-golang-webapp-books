@@ -31,6 +31,27 @@ pipeline {
                }
             }
        }
+           stage('Test image') {
+           agent any
+           steps {
+              script {
+                sh '''
+                    curl http://172.17.0.1:${PORT_EXPOSED} 
+                '''
+              }
+           }
+      }
+      stage('Clean Container') {
+          agent any
+          steps {
+             script {
+               sh '''
+                 docker stop $IMAGE_NAME
+                 docker rm $IMAGE_NAME
+               '''
+             }
+          }
+     }
 
      stage ('Login and Push Image on docker hub') {
           agent any
