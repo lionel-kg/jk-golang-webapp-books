@@ -1,5 +1,7 @@
 pipeline {
-     
+     tools {
+        go 'go-1.22'
+     }
      environment {
        ID_DOCKER = "${ID_DOCKER_PARAMS}"
        IMAGE_NAME = "jk-golang-webapp-books"
@@ -7,6 +9,7 @@ pipeline {
        PORT_EXPOSED = "${PORT_PARAMS}" 
        STAGING = "${ID_DOCKER}-staging"
        PRODUCTION = "${ID_DOCKER}-production"
+       GO111MODULE = 'on'
      }
      agent none
      stages {
@@ -31,16 +34,11 @@ pipeline {
                }
             }
        }
-           stage('Test image') {
-           agent any
-           steps {
-              script {
-                sh '''
-                    curl http://172.17.0.1:${PORT_EXPOSED} 
-                '''
-              }
-           }
-      }
+          stage('Test') {
+            steps {
+                sh 'go test ./...'
+            }
+        }
       stage('Clean Container') {
           agent any
           steps {
