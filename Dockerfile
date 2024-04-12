@@ -17,7 +17,7 @@ COPY . .
 RUN go build -o jk-golang-webapp-books .
 
 # Expose port 8080 to the outside world
-EXPOSE 8081
+EXPOSE $PORT
 
 # Command to run the executable
 CMD ["./jk-golang-webapp-books"]
