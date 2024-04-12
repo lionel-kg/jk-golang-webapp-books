@@ -35,6 +35,7 @@ pipeline {
             }
        }
           stage('Test') {
+          agent any
             steps {
                 sh 'go test ./...'
             }
