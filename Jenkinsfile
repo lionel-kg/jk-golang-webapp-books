@@ -14,10 +14,70 @@ pipeline {
              agent any
              steps {
                 script {
-                  echo "hello"
+                  sh 'docker build -t ${ID_DOCKER}/$IMAGE_NAME:$IMAGE_TAG .'
                 }
              }
         }
+        stage('Run container based on builded image') {
+            agent any
+            steps {
+               script {
+                 sh '''
+                    echo "Clean Environment"
+                    docker rm -f $IMAGE_NAME || echo "container does not exist"
+                    docker run --name $IMAGE_NAME -d -p ${PORT_EXPOSED}:8081 -e PORT=8081 ${ID_DOCKER}/$IMAGE_NAME:$IMAGE_TAG
+                    sleep 5
+                 '''
+               }
+            }
+       }
+      
+      stage('Clean Container') {
+          agent any
+          steps {
+             script {
+               sh '''
+                 docker stop $IMAGE_NAME
+                 docker rm $IMAGE_NAME
+               '''
+             }
+          }
+     }
+
+     stage ('Login and Push Image on docker hub') {
+          agent any
+        environment {
+           DOCKERHUB_PASSWORD  = credentials('dockerhub')
+        }            
+          steps {
+             script {
+               sh '''
+                   echo $DOCKERHUB_PASSWORD_PSW | docker login -u $ID_DOCKER --password-stdin
+                   docker push ${ID_DOCKER}/$IMAGE_NAME:$IMAGE_TAG
+               '''
+             }
+          }
+      }    
+          stage('Push image in staging and deploy it') {
+    when {
+        expression { GIT_BRANCH == 'origin/main' }
+    }
+    agent any
+    environment {
+        HEROKU_API_KEY = credentials('heroku_api_key')
+    }  
+    steps {
+        script {
+            sh '''
+                npm install heroku
+                heroku container:login
+                heroku create $STAGING || echo "project already exist"
+                heroku container:push -a $STAGING web
+                heroku container:release -a $STAGING web
+            '''
+        }
+    }
+}
   }
     post {
         always {
