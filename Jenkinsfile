@@ -31,7 +31,17 @@ pipeline {
                }
             }
        }
-      
+      stage('Test Application') {
+            agent any
+            steps {
+                script {
+                    sh '''
+                        echo "Running tests within the Docker container"
+                        docker exec $IMAGE_NAME go test ./... -v
+                    '''
+                }
+            }
+        }
       stage('Clean Container') {
           agent any
           steps {
