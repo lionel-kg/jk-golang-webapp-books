@@ -5,7 +5,7 @@ pipeline {
        IMAGE_NAME = "jk-golang-webapp-books"
        IMAGE_TAG = "latest"
        PORT_EXPOSED = "${PORT_PARAMS}" 
-       STAGING = "${ID_DOCKER}-staging"
+       STAGING = "${ID_DOCKER}-book-staging"
        PRODUCTION = "${ID_DOCKER}-production"
      }
      agent none
